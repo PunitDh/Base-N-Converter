@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Converter</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+        integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <style>
+        .tab {  cursor: pointer;  }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col tab px-3">
+                <h1 class="jumbotron">Base Converter
+                    <div class="h5">>> Convert from any base to any base</div>
+                </h1>
+            </div>
+            <div class="col tab px-3">
+                <h1 class="jumbotron">Bit Conversion
+                    <div class="h5">>> Bit shifting calculator</div>
+                </h1>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container mb-3 px-4 tabcontent">
+        <form onsubmit="return false;">
+            <p class="row">
+                <label for="num-input" class="form-label col-md-3">Number to convert:</label>
+                <input type="text" autocomplete="off" class="form-control col-md-8" id="num-input" placeholder="Example: 123AB">
+            </p>
+            <p class="row">
+                <label for="base-input" class="form-label col-md-3">From: <small class="form-text">(Between
+                        2-36)</small></label>
+                <input type="text" autocomplete="off" class="form-control col-md-8" id="base-input" placeholder="Example: 16">
+            </p>
+            <p class="row">
+                <label for="base-select" class="form-label col-md-3">To: <small class="form-text">(Between
+                        2-36)</small></label>
+                <input type="text" autocomplete="off" class="form-control col-md-8" id="base-select" placeholder="Example: 10">
+            </p>
+            <p class="row">
+                <span class="col-md-2 offset-md-3">
+                    <button class="btn btn-primary col" id="base-converter">Convert</button></span>
+                <span class="col-md-2">
+                    <button class="btn btn-danger col" id="base-swap">Swap Bases</button></span>
+                <span class="col-md-2">
+                    <button class="btn btn-warning col" id="number-swap">Swap Numbers</button></span>
+                <span class="col-md-2">
+                    <button class="btn btn-success col" id="random">Random</button></span>
+            </p>
+            <p class="row">
+                <label for="base-output" class="form-label col-md-3">Output:</label>
+                <input type="text" autocomplete="off" class="form-control col-md-8" id="base-output">
+            </p>
+            <p class="row">
+                <span class="col-md-2 offset-md-3">
+                    <input type="reset" class="btn btn-secondary col" id="reset" value="Reset"></span>
+            </p>
+        </form>
+    </div>
+
+    <div class="container mb-3 px-4 tabcontent">
+        <form onsubmit="return false;">
+            <p class="row">
+                <label for="bit-input" class="form-label col-md-3">Number to bit-shift:</label>
+                <input type="text" autocomplete="off" class="form-control col-md-8" id="bit-input" placeholder="Example: 123AB">
+            </p>
+            <p class="row">
+                <label for="base-shift-input" class="form-label col-md-3">Base: <small class="form-text">(Between
+                    2-36)</small></label>
+                <input type="text" autocomplete="off" class="form-control col-md-8" id="base-shift-input" placeholder="Example: 16">
+            </p>
+            <p class="row">
+                <label for="base-shift-type-input"" class="form-label col-md-3">Towards: </label>
+                <input type="checkbox" autocomplete="off" class="form-control col-md-8" id="base-shift-type-input">
+            </p>
+            <p class="row">
+                <label for="shift-input" class="form-label col-md-3">Bits to shift:</label>
+                <input type="text" autocomplete="off" class="form-control col-md-8" id="shift-input" placeholder="Example: 16">
+            </p>
+        </form>
+        Another tab
+    </div>
+
+    <script>
+        class CharSet {
+            constructor() { this.set = 'abcdefghijklmnopqrstuvwxyz'; }
+        }
+
+        const MAX_BASE          = 36;
+        const MIN_BASE          = 2;
+        const MAX_DIGITS        = 20;
+        const charset           = new CharSet();
+        const btn_output        = $("#base-converter");
+        const btn_base_swap     = $("#base-swap");
+        const btn_number_swap   = $("#number-swap");
+        const btn_random        = $("#random");
+        const input             = document.getElementById("num-input");
+        const ibase             = document.getElementById("base-input");
+        const obase             = document.getElementById("base-select");
+        const output            = document.getElementById("base-output");
+        const base_swap         = () => swap(ibase, obase);
+        const num_swap          = () => swap(output, input);
+        const convert_base      = () => output.value = convertBaseToBase(input.value, ibase.value, obase.value);
+        const randInt           = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const parseNum          = (num, base) => (num > 9 && num < base) ? charset.set[num - 10].toUpperCase() : num;
+
+        const swap = (inp, out) => {
+            var temp = inp.value;
+            inp.value = out.value;
+            out.value = temp;
+        }
+
+        const random_generate = () => {
+            const ib = randInt(MIN_BASE, MAX_BASE);
+            var rand_str = "";
+            maxDigits = randInt(1, MAX_DIGITS);
+            for (let i = 0; i < maxDigits; i++) {
+                if (ib <= 9) rand_str += String(randInt(0, ib - 1));
+                else rand_str += (randInt(0, ib - 1) > 9) ? charset.set.charAt(randInt(0, ib - 11)).toUpperCase() : String(randInt(0, ib - 1));
+            }
+            input.value = rand_str;
+            ibase.value = ib;
+            obase.value = Math.round(Math.random() * (MAX_BASE - MIN_BASE)) + MIN_BASE;
+            convert_base();
+        };
+
+        btn_output.click(convert_base);
+        btn_base_swap.click(base_swap);
+        btn_number_swap.click(num_swap);
+        btn_random.click(random_generate);
+
+        function convertBaseToBase(num, ibase, obase) {
+            const error_message = "\"" + num + "\"" + " cannot be converted from \"base-" + ibase + "\" to \"base-" + obase + "\" notation.";
+            if (obase <= 1 || ibase <= 1 || isNaN(ibase) || isNaN(obase) || ibase > 36 || obase > 36) return "Invalid base notation";
+            const t = convertBaseToDec(num, ibase);
+            if (t == -1) return ("\"" + num + "\"" + " is not a valid base-" + ibase + " number");
+            const s = convertDecToBase(t, obase);
+            if (s == -1) return error_message;
+            return s;
+        }
+
+        function convertBaseToDec(num, base) {
+            var num_arr = new Array(), num_out = new Array();
+            const num_str = String(num);
+            var len = num_str.length;
+            for (let i = len - 1; i >= 0; i--)  num_arr.push(num_str.charAt(i));
+            for (let i = 0; i < num_arr.length; i++) {
+                var char_out = parseChar(num_arr[i], base);
+                if (char_out == -1) return -1;
+                num_out.push(char_out);
+            }
+            var num_total = 0;
+            for (let i = 0; i < num_out.length; i++) num_total += Math.pow(base, i) * parseInt(num_out[i]);
+            return num_total;
+        }
+
+        function convertDecToBase(num, base) {
+            if (isNaN(num)) return -1;
+            var base_place = 0, i = 0;
+            var base_out = new Array(), dec_arr = new Array();
+            var remainder = num;
+
+            while (true) {
+                base_place = Math.pow(base, i);
+                if (base_place > num) break;
+                dec_arr.push(base_place);
+                i++;
+            }
+            dec_arr = dec_arr.reverse();
+
+            for (let i = 0; i < dec_arr.length; i++) {
+                divisor = Math.floor(remainder / dec_arr[i]);
+                remainder = num % dec_arr[i];
+                base_out.push(parseNum(divisor, base));
+            }
+            return base_out.join("");
+        }
+
+        function parseChar(chr, base) {
+            if (isNaN(chr)) return (charset.set.substring(0, base - 10).includes(chr.toLowerCase())) ? charset.set.indexOf(chr.toLowerCase()) + 10 : -1;
+            return (parseInt(chr) < base) ? parseInt(chr) : -1;
+        }   
+    </script>
+</body>
+
+</html>
